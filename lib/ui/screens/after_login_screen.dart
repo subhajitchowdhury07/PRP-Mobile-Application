@@ -1,8 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swipe_button/flutter_swipe_button.dart';
 
-class AfterLoginScreen extends StatelessWidget {
+class AfterLoginScreen extends StatefulWidget {
   const AfterLoginScreen({Key? key}) : super(key: key);
+
+  @override
+  _AfterLoginScreenState createState() => _AfterLoginScreenState();
+}
+
+class _AfterLoginScreenState extends State<AfterLoginScreen> {
+  late TextEditingController _dateController;
+
+  @override
+  void initState() {
+    super.initState();
+    _dateController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +56,11 @@ class AfterLoginScreen extends StatelessWidget {
                     ),
                     Column(
                       children: <Widget>[
-                        _buildDateField(context, "Date", Icons.calendar_today),
+                        _buildDateField("Date", Icons.calendar_today),
                         _buildFormField("Office/Lane", Icons.location_on),
-                        _buildFormField("Cash amount (USD)", Icons.attach_money),
-                        _buildFormField("Check amount (USD)", Icons.attach_money),
-                        _buildFormField("Total amount (USD)", Icons.attach_money),
+                        _buildAmountField("Cash amount", Icons.attach_money),
+                        _buildAmountField("Check amount", Icons.attach_money),
+                        _buildAmountField("Total amount", Icons.attach_money),
                         _buildFormField("Customer name", Icons.person),
                         _buildFormField("Customer code", Icons.person),
                         _buildFormField("Legal Entity / First and Last Names", Icons.person),
@@ -103,9 +122,7 @@ class AfterLoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDateField(BuildContext context, String hintText, IconData prefixIcon) {
-    final TextEditingController _dateController = TextEditingController();
-
+  Widget _buildDateField(String hintText, IconData prefixIcon) {
     return Column(
       children: <Widget>[
         const SizedBox(height: 20),
@@ -119,7 +136,9 @@ class AfterLoginScreen extends StatelessWidget {
             );
             if (pickedDate != null) {
               String formattedDate = "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-              _dateController.text = formattedDate;
+              setState(() {
+                _dateController.text = formattedDate;
+              });
             }
           },
           readOnly: true,
@@ -159,6 +178,27 @@ class AfterLoginScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildAmountField(String hintText, IconData prefixIcon) {
+    return Column(
+      children: <Widget>[
+        const SizedBox(height: 20),
+        TextField(
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: BorderSide.none,
+            ),
+            fillColor: Colors.purple.withOpacity(0.1),
+            filled: true,
+            prefixIcon: Icon(prefixIcon),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDepositDetailsField(String headingText) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +214,7 @@ class AfterLoginScreen extends StatelessWidget {
         _buildFormField("Bank", Icons.account_balance),
         _buildFormField("Drawer Name", Icons.person),
         _buildFormField("Ch/. No.", Icons.label),
-        _buildFormField("Amount USD", Icons.attach_money),
+        _buildAmountField("Amount USD", Icons.attach_money),
       ],
     );
   }
